@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Manager - Flask App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-gray-900">Item Manager</h1>
+            <p class="text-gray-600 mt-1">Manage your items with ease</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Add Item Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Item</h2>
+            <form id="itemForm" class="space-y-4">
+                <div>
+                    <label for="itemName" class="block text-sm font-medium text-gray-700 mb-2">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="itemName" 
+                        required
+                        placeholder="Enter item name"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    >
+                </div>
+                <div>
+                    <label for="itemDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea 
+                        id="itemDescription" 
+                        rows="3"
+                        placeholder="Enter item description (optional)"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"
+                    ></textarea>
+                </div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition font-medium"
+                >
+                    Add Item
+                </button>
+            </form>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer" class="mb-4"></div>
+
+        <!-- Items List -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Items List</h2>
+            <div id="loadingSpinner" class="text-center py-8 hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="text-gray-600 mt-2">Loading items...</p>
+            </div>
+            <div id="itemsList" class="space-y-3">
+                <!-- Items will be loaded here -->
+            </div>
+            <div id="emptyState" class="text-center py-12 hidden">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <p class="text-gray-500 mt-4">No items yet. Add your first item above!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-4xl mx-auto px-4 py-6 mt-8 text-center text-gray-600">
+        <p>&copy; 2024 Item Manager. Built with Flask, Vanilla JS & Tailwind CSS</p>
+    </footer>
+
+    <script>
+        // API Base URL
+        const API_URL = '/api/items';
+
+        // DOM Elements
+        const itemForm = document.getElementById('itemForm');
+        const itemNameInput = document.getElementById('itemName');
+        const itemDescriptionInput = document.getElementById('itemDescription');
+        const itemsList = document.getElementById('itemsList');
+        const emptyState = document.getElementById('emptyState');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+            
+            alertDiv.className = `${bgColor} border px-4 py-3 rounded-lg fade-in`;
+            alertDiv.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="font-bold ml-4">×</button>
+                </div>
+            `;
+            
+            alertContainer.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Load all items
+        async function loadItems() {
+            try {
+                loadingSpinner.classList.remove('hidden');
+                itemsList.innerHTML = '';
+                emptyState.classList.add('hidden');
+
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch items');
+                }
+
+                const items = await response.json();
+                
+                loadingSpinner.classList.add('hidden');
+
+                if (items.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                items.forEach(item => {
+                    const itemDiv = createItemElement(item);
+                    itemsList.appendChild(itemDiv);
+                });
+
+            } catch (error) {
+                loadingSpinner.classList.add('hidden');
+                showAlert('Failed to load items. Please try again.', 'error');
+                console.error('Error loading items:', error);
+            }
+        }
+
+        // Create item element
+        function createItemElement(item) {
+            const div = document.createElement('div');
+            div.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition fade-in';
+            div.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
+                        ${item.description ? `<p class="text-gray-600 mt-1">${escapeHtml(item.description)}</p>` : ''}
+                        <p class="text-xs text-gray-400 mt-2">Created: ${formatDate(item.created_at)}</p>
+                    </div>
+                    <button 
+                        onclick="deleteItem(${item.id})" 
+                        class="ml-4 text-red-600 hover:text-red-800 transition p-2"
+                        title="Delete item"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            return div;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add new item
+        itemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = itemNameInput.value.trim();
+            const description = itemDescriptionInput.value.trim();
+
+            if (!name) {
+                showAlert('Please enter an item name', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, description }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to create item');
+                }
+
+                const newItem = await response.json();
+                
+                // Clear form
+                itemForm.reset();
+                
+                // Show success message
+                showAlert('Item added successfully!', 'success');
+                
+                // Reload items
+                loadItems();
+
+            } catch (error) {
+                showAlert(error.message || 'Failed to add item', 'error');
+                console.error('Error creating item:', error);
+            }
+        });
+
+        // Delete item
+        async function deleteItem(itemId) {
+            if (!confirm('Are you sure you want to delete this item?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${itemId}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete item');
+                }
+
+                showAlert('Item deleted successfully!', 'success');
+                loadItems();
+
+            } catch (error) {
+                showAlert('Failed to delete item. Please try again.', 'error');
+                console.error('Error deleting item:', error);
+            }
+        }
+
+        // Make deleteItem available globally
+        window.deleteItem = deleteItem;
+
+        // Load items when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadItems();
+        });
+    </script>
+</body>
+</html>
