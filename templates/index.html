@@ -1,33 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CloudNotes Pro • Enterprise Academic Platform</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudNotes Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: { extend: {
-        colors: { primary: "#6366f1", secondary: "#8b5cf6", accent: "#ec4899" },
-        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-      }}
-    }
-  </script>
   <style>
-    .glass { backdrop-filter: blur(16px); background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); }
-    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); }
+    .glass { backdrop-filter: blur(12px); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); }
   </style>
 </head>
-<body class="min-h-screen gradient-bg text-white">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <div class="fixed top-6 right-6 z-50 space-y-3">
+    <div class="fixed top-4 right-4 z-50 space-y-2">
       {% for cat, msg in messages %}
-        <div class="glass px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-pulse border-l-4 {{ 'border-green-400' if cat=='success' else 'border-red-400' }}">
-          <i class="fas fa-{{ 'check-circle' if cat=='success' else 'exclamation-triangle' }}"></i>
-          <span class="font-medium">{{ msg }}</span>
+        <div class="glass px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 {{ 'bg-green-600' if cat=='success' else 'bg-red-600' }}">
+          <i class="fas fa-check"></i> {{ msg }}
         </div>
       {% endfor %}
     </div>
@@ -35,139 +25,106 @@
 {% endwith %}
 
 {% if not user %}
-<!-- LANDING PAGE -->
-<div class="min-h-screen flex items-center justify-center px-6">
-  <div class="text-center max-w-5xl">
-    <h1 class="text-7xl md:text-8xl font-black mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-      CloudNotes Pro
-    </h1>
-    <p class="text-2xl md:text-3xl mb-12 opacity-90">Enterprise Academic Notes Platform</p>
-    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-      <form method="POST" action="/login" class="glass p-10 rounded-3xl">
-        <h2 class="text-4xl font-bold mb-8">Welcome Back</h2>
-        <input name="username" placeholder="Username" required class="w-full px-6 py-4 rounded-xl bg-white/10 border border-white/20 focus:border-indigo-400 outline-none mb-4"/>
-        <input name="password" type="password" placeholder="Password" required class="w-full px-6 py-4 rounded-xl bg-white/10 border border-white/20 focus:border-indigo-400 outline-none mb-6"/>
-        <button class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 py-5 rounded-xl font-bold text-xl hover:scale-105 transition transform">Login</button>
-        <p class="mt-4 opacity-70">Demo: <code class="bg-white/20 px-3 py-1 rounded">admin / admin123</code></p>
+<div class="min-h-screen flex items-center justify-center p-6">
+  <div class="text-center max-w-2xl">
+    <h1 class="text-6xl font-black mb-4 bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent">CloudNotes Pro</h1>
+    <p class="text-xl mb-12">The Ultimate Notes Sharing Platform</p>
+    <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+      <form method="POST" action="/login" class="glass p-8 rounded-3xl">
+        <h2 class="text-3xl font-bold mb-6">Login</h2>
+        <input name="username" placeholder="Username" required class="w-full px-6 py-3 rounded-xl bg-white/10 border border-white/20 mb-4">
+        <input name="password" type="password" placeholder="Password" required class="w-full px-6 py-3 rounded-xl bg-white/10 border border-white/20 mb-6">
+        <button class="w-full bg-gradient-to-r from-pink-600 to-purple-600 py-4 rounded-xl font-bold text-xl">Login</button>
+        <p class="mt-4 text-sm opacity-75">Demo: admin / admin123</p>
       </form>
-
-      <form method="POST" action="/register" class="glass p-10 rounded-3xl">
-        <h2 class="text-4xl font-bold mb-8">Join Now</h2>
-        <input name="username" placeholder="Username" required class="w-full px-6 py-4 rounded-xl bg-white/10 border border-white/20 focus:border-pink-400 outline-none mb-4"/>
-        <input name="email" type="email" placeholder="Email" required class="w-full px-6 py-4 rounded-xl bg-white/10 border border-white/20 focus:border-pink-400 outline-none mb-4"/>
-        <input name="password" type="password" placeholder="Password" required class="w-full px-6 py-4 rounded-xl bg-white/10 border border-white/20 focus:border-pink-400 outline-none mb-6"/>
-        <button class="w-full bg-gradient-to-r from-pink-500 to-purple-600 py-5 rounded-xl font-bold text-xl hover:scale-105 transition">Create Account</button>
+      <form method="POST" action="/register" class="glass p-8 rounded-3xl">
+        <h2 class="text-3xl font-bold mb-6">Register</h2>
+        <input name="username" placeholder="Username" required class="w-full px-6 py-3 rounded-xl bg-white/10 border border-white/20 mb-4">
+        <input name="email" placeholder="Email" required class="w-full px-6 py-3 rounded-xl bg-white/10 border border-white/20 mb-4">
+        <input name="password" type="password" placeholder="Password" required class="w-full px-6 py-3 rounded-xl bg-white/10 border border-white/20 mb-6">
+        <button class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 py-4 rounded-xl font-bold text-xl">Create Account</button>
       </form>
     </div>
   </div>
 </div>
-
 {% else %}
-<!-- DASHBOARD -->
-<nav class="glass sticky top-0 z-40 border-b border-white/10 backdrop-blur-xl">
-  <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-    <h1 class="text-4xl font-black bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">CloudNotes</h1>
+
+<nav class="glass sticky top-0 z-40 border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold">CloudNotes</h1>
     <div class="flex items-center gap-6">
-      <span class="text-lg">Hi, <strong class="text-indigo-300">{{ user }}</strong>{% if role == 'admin' %} <span class="text-xs bg-red-500/30 px-3 py-1 rounded-full">ADMIN</span>{% endif %}</span>
-      <a href="/logout" class="bg-red-600/80 hover:bg-red-600 px-6 py-3 rounded-xl font-bold transition">Logout</a>
+      <span>Welcome, <strong>{{ user }}</strong></span>
+      <a href="/logout" class="bg-red-600 px-6 py-2 rounded-xl">Logout</a>
     </div>
   </div>
 </nav>
 
-<div class="max-w-7xl mx-auto p-6 pb-20">
-  <!-- Search Bar -->
-  <form class="glass p-6 rounded-3xl mb-10 border border-white/10">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <input name="q" value="{{ q }}" placeholder="Search notes..." class="px-6 py-4 rounded-xl bg-white/10 border border-white/20 focus:border-indigo-400 outline-none"/>
-      <select name="cat" class="px-6 py-4 rounded-xl bg-white/10 border border-white/20">
-        {% for c in categories %}<option value="{{ c }}" {{ 'selected' if c==cat }}>{{ c }}</option>{% endfor %}
+<div class="max-w-7xl mx-auto p-6">
+  <form class="glass p-6 rounded-3xl mb-8">
+    <div class="grid md:grid-cols-4 gap-4">
+      <input name="q" value="{{ q }}" placeholder="Search..." class="px-6 py-3 rounded-xl bg-white/10 border border-white/20">
+      <select name="cat" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20">
+        {% for c in categories %}<option {{ 'selected' if c==cat }}>{{ c }}</option>{% endfor %}
       </select>
-      <select name="sort" class="px-6 py-4 rounded-xl bg-white/10 border border-white/20">
-        <option value="recent" {{ 'selected' if not sort or sort=='recent' }}>Recent</option>
+      <select name="sort" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20">
+        <option value="recent" {{ 'selected' if sort!='popular' and sort!='rating' }}>Recent</option>
         <option value="popular" {{ 'selected' if sort=='popular' }}>Popular</option>
         <option value="rating" {{ 'selected' if sort=='rating' }}>Top Rated</option>
       </select>
-      <button class="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-4 rounded-xl font-bold hover:scale-105 transition">Search</button>
+      <button class="bg-gradient-to-r from-pink-600 to-purple-600 px-8 py-3 rounded-xl font-bold">Search</button>
     </div>
   </form>
 
-  <div class="grid lg:grid-cols-3 gap-10">
-    <!-- Upload Panel -->
-    <div class="glass p-8 rounded-3xl border border-white/10">
-      <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
-        <i class="fas fa-cloud-upload-alt text-indigo-400"></i> Upload New Note
-      </h2>
+  <div class="grid lg:grid-cols-3 gap-8">
+    <div class="glass p-8 rounded-3xl">
+      <h2 class="text-2xl font-bold mb-6">Upload Note</h2>
       <form method="POST" action="/upload" enctype="multipart/form-data">
-        <input name="title" placeholder="Title" required class="w-full mb-4 px-6 py-4 rounded-xl bg-white/10 border border-white/20"/>
+        <input name="title" placeholder="Title" required class="w-full mb-4 px-6 py-3 rounded-xl bg-white/10 border">
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <input name="category" placeholder="Category" list="cats" required class="px-6 py-4 rounded-xl bg-white/10 border"/>
-          <input name="subject" placeholder="Subject" required class="px-6 py-4 rounded-xl bg-white/10 border"/>
+          <input name="category" placeholder="Category" required class="px-6 py-3 rounded-xl bg-white/10 border">
+          <input name="subject" placeholder="Subject" required class="px-6 py-3 rounded-xl bg-white/10 border">
         </div>
-        <textarea name="desc" placeholder="Description" class="w-full mb-4 px-6 py-4 rounded-xl bg-white/10 border" rows="3"></textarea>
-        <input name="tags" placeholder="Tags (comma separated)" class="w-full mb-6 px-6 py-4 rounded-xl bg-white/10 border"/>
-        <input type="file" name="file" required class="w-full mb-6 file:mr-4 file:py-3 file:px-8 file:rounded-xl file:bg-gradient-to-r file:from-indigo-500 file:to-purple file:text-white"/>
-        <button class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 py-5 rounded-xl font-bold text-xl hover:scale-105 transition shadow-lg">
-          Upload Note
-        </button>
+        <textarea name="desc" placeholder="Description" class="w-full mb-4 px-6 py-3 rounded-xl bg-white/10 border" rows="3"></textarea>
+        <input name="tags" placeholder="Tags (comma separated)" class="w-full mb-4 px-6 py-3 rounded-xl bg-white/10 border">
+        <input type="file" name="file" required class="w-full mb-6">
+        <button class="w-full bg-gradient-to-r from-green-500 to-emerald-600 py-4 rounded-xl font-bold text-xl">Upload</button>
       </form>
-      <datalist id="cats">
-        <option>Computer Science</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option>
-      </datalist>
     </div>
 
-    <!-- Notes Grid -->
     <div class="lg:col-span-2 space-y-6">
       {% for note in notes %}
-      <div class="glass rounded-3xl p-8 border border-white/10 hover:scale-[1.02] transition duration-300">
-        <div class="flex justify-between items-start mb-6">
+      <div class="glass rounded-3xl p-6">
+        <div class="flex justify-between mb-4">
           <div>
-            <h3 class="text-2xl font-bold text-indigo-300">{{ note.title }}</h3>
-            <p class="text-lg opacity-80">{{ note.subject }} • {{ note.category }}</p>
+            <h3 class="text-2xl font-bold">{{ note.title }}</h3>
+            <p class="opacity-75">{{ note.subject }} • {{ note.category }}</p>
           </div>
           <div class="text-right">
-            <div class="text-4xl font-black text-yellow-400">{{ note.avg_rating or 0 }} ★</div>
+            <div class="text-3xl font-bold text-yellow-400">{{ note.avg_rating or 0 }} stars</div>
             <div class="text-sm opacity-70">{{ note.downloads }} downloads</div>
           </div>
         </div>
-
-        {% if note.description %}
-        <p class="mb-6 text-gray-300 leading-relaxed">{{ note.description }}</p>
-        {% endif %}
-
-        <div class="flex flex-wrap gap-3 mb-6">
+        {% if note.description %}<p class="mb-4">{{ note.description }}</p>{% endif %}
+        <div class="flex flex-wrap gap-2 mb-4">
           {% for tag in note.tags|fromjson %}
-            <span class="bg-gradient-to-r from-purple-600/40 to-pink-600/40 px-4 py-2 rounded-full text-sm font-medium border border-purple-400/30">
-              #{{ tag }}
-            </span>
+            <span class="bg-purple-600/30 px-4 py-2 rounded-full text-sm">#{{ tag }}</span>
           {% endfor %}
         </div>
-
-        <div class="flex flex-wrap gap-4 items-center">
-          <a href="/download/{{ note.id }}" class="bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-4 rounded-xl font-bold hover:scale-110 transition shadow-lg">
-            Download
-          </a>
-
-          <form method="POST" action="/rate/{{ note.id }}" class="flex items-center gap-3">
-            <select name="rating" class="bg-white/10 rounded-lg px-4 py-2 border border-white/20">
-              <option value="5">5</option><option value="4">4</option><option value="3" selected>3</option><option value="2">2</option><option value="1">1</option>
+        <div class="flex gap-4">
+          <a href="/download/{{ note.id }}" class="bg-green-600 px-6 py-3 rounded-xl font-bold">Download</a>
+          <form method="POST" action="/rate/{{ note.id }}" class="flex gap-2">
+            <select name="rating" class="bg-white/10 px-4 py-2 rounded">
+              <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
             </select>
-            <button class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-bold hover:scale-110 transition">Rate</button>
+            <button class="bg-yellow-500 text-black px-4 py-2 rounded font-bold">Rate</button>
           </form>
-
           {% if note.uploader == user or role == 'admin' %}
-            <a href="/delete/{{ note.id }}" onclick="return confirm('Delete this note?')" class="bg-red-600/80 hover:bg-red-600 px-6 py-3 rounded-xl font-bold transition">
-              Delete
-            </a>
+            <a href="/delete/{{ note.id }}" onclick="return confirm('Delete?')" class="bg-red-600 px-6 py-3 rounded-xl font-bold">Delete</a>
           {% endif %}
-
-          <span class="ml-auto text-sm opacity-60">by {{ note.uploader }} • {{ note.upload_date[:10] }}</span>
         </div>
       </div>
       {% else %}
-      <div class="text-center py-20 text-3xl opacity-50 glass rounded-3xl">
-        <i class="fas fa-inbox text-6xl mb-6"></i>
-        <p>No notes found</p>
-      </div>
+      <div class="text-center py-20 text-3xl opacity-50">No notes yet</div>
       {% endfor %}
     </div>
   </div>
@@ -175,7 +132,7 @@
 {% endif %}
 
 <script>
-  setTimeout(() => document.querySelector('.fixed')?.remove(), 5000);
+  setTimeout(() => document.querySelectorAll('.fixed')?.forEach(e => e.remove()), 4000);
 </script>
 </body>
 </html>
